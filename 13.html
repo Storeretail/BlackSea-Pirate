@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Mining Interface</title>
+    <style>
+        /* Styling from your provided code */
+       body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            
+        }
+
+        .container {
+            width: 100%;
+            
+            height: 425px;
+            background-color: #fff;
+            border-radius: 5px;
+            border: 2px solid black;
+            padding: 10px;
+            box-shadow:  0 0 5px rgba(0, 0, 0, 0.8);
+            margin-left:5px;
+            margin-right:5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        
+/* Button wrapper for the coin */
+/* Wrapper for the button and coin image */
+.start-mining-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: none;
+    border: none;
+    padding: 0;
+    outline: none;
+    cursor: pointer;
+    border-radius: 50%;
+    position: relative;
+    width: 220px;  /* Adjusted width to fit the content */
+    height: 220px; /* Adjusted height to fit the content */
+    background-color: transparent;
+    text-align: center;
+    margin: 0 auto;  /* Ensure it's horizontally centered */
+}
+
+/* Coin image styling */
+.coin-image {
+    width: 250px; /* Adjust the size of the coin */
+    height: 250px;
+    border-radius: 50%; /* Circular coin */
+    display: block;
+    margin-bottom: 10px;  /* Space between image and title */
+    pointer-events: none; /* Prevent image from being clicked */
+}
+
+/* Title text styling */
+.start-mining-text {
+    font-family: 'Arial', sans-serif;
+    font-weight: 1000;
+    font-size:   2.2em; /* Adjust text size */
+    color: #000; /* Black text */
+    margin: 0;
+    text-align: center;
+    text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.2); /* Shadow for the title */
+}
+
+/* Hover effect on the coin */
+/* Smooth transition effect for the coin image */
+.start-mining-button .coin-image {
+    transition: transform 0.3s ease-in-out; /* Smooth transition for transform */
+}
+
+/* Hover effect on the coin */
+.start-mining-button:hover .coin-image {
+    transform: scale(1.02); /* Slight zoom effect on hover */
+    transition: transform 0.3s ease-in-out; /* Smooth transition */
+}
+
+/* Click animation effect */
+.start-mining-button:active .coin-image {
+    transform: scale(0.90); /* Slight shrink on click */
+    transition: transform 0.1s ease-in-out; /* Faster shrink effect */
+}
+        .dropdown {
+            position: relative;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .dropdown-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .dropdown-select {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #fff;
+            color: #333;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-select:hover {
+            background-color: #f1f1f1;
+        }
+
+.crypto-list {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            max-height: 185px;
+            overflow-y: auto;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .crypto-list.visible {
+            display: block;
+        }
+
+        .crypto-option {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .crypto-option img {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+        }
+
+        .crypto-option:hover {
+            background-color: #f0f0f0;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 40px;
+        }
+
+        .button-container button {
+            width: 50%;
+            padding: 10px 0;
+            color: #fff;
+            background-color: #333;
+            border: none;
+            font-weight: bold;
+            font-size: 1em;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            
+            box-sizing: border-box;
+        }
+
+        .button-container button:hover {
+            background-color: #555;
+        }
+
+        .step-header {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        #qr-code-wrapper {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 5px 0;
+        }
+
+        #qr-code {
+            width: 70%;
+            height: 70%;
+        }
+
+        .qr-center-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            border-radius: 20%;
+            background-color: white;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .qr-center-icon img {
+            width: 90%;
+            height: 90%;
+            object-fit: cover;
+        }
+
+        .info-box {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #555;
+            position: relative;
+            text-align: center;
+        }
+
+        .address-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            background-color: #f9f9f9;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            margin-top: 7px;
+            font-size: 14px;
+        }
+
+        .address-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .copy-button {
+            background-color: #888;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 9px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .warning-message {
+            color: red;
+            font-size: 12px;
+            margin-top: 10px;
+            text-align: center;
+        }
+.error {
+            color: red;
+            font-size: 14px;
+        }
+        .success {
+            color: green;
+            font-size: 14px;
+        }
+ .button-container::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%); /* Centers the line */
+    width: 2px; /* Thickness of the line */
+    height: 100%; /* Adjust to desired height */
+    background-color: white; /* Color of the line */
+}/* No changes in styles */
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script type="text/javascript" src="https://api.goaffpro.com/loader.js?shop=uwnajmjzwe"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Start Mining Content -->
+         <div class="content-container start-mining-container" id="start-mining">
+            
+             <button class="start-mining-button">
+                     <span class="start-mining-text"> START MINING</span>
+                <div class="coin-button" onclick="showCryptoSelection()">
+                        <img class="coin-image" src="https://i.imgur.com/voCIZbl.png" alt="Start Mining Coin">
+                                
+                                    </div>
+</button>
+                                    </div>
+  
+        <!-- Crypto Selection Content -->
+        <div class="content-container crypto-selection hidden" id="crypto-selection">
+            <div class="step-header">Select Your Cryptocurrency</div>
+
+            <div class="dropdown">
+                <label class="dropdown-label">Select Cryptocurrency</label>
+                <div class="dropdown-select" onclick="toggleDropdown('crypto-options')">
+                    <img id="crypto-icon" src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" alt="crypto icon" style="width: 24px; height: 24px;">
+                    <span id="crypto">Bitcoin</span>
+                </div>
+                <div class="crypto-list" id="crypto-options">
+                                      <div class="crypto-option" onclick="selectCrypto('Bitcoin', 'https://cryptologos.cc/logos/bitcoin-btc-logo.png')">
+                        <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" alt="Bitcoin Logo">
+                        Bitcoin
+                    </div>
+                    <div class="crypto-option" onclick="selectCrypto('Ethereum', 'https://cryptologos.cc/logos/ethereum-eth-logo.png')">
+                        <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" alt="Ethereum Logo">
+                        Ethereum
+                    </div>
+                    <div class="crypto-option" onclick="selectCrypto('USDT', 'https://cryptologos.cc/logos/tether-usdt-logo.png')">
+                        <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT Logo">
+                        USDT
+                    </div>
+                    <div class="crypto-option" onclick="selectCrypto('SOL', 'https://cryptologos.cc/logos/solana-sol-logo.png')">
+                        <img src="https://cryptologos.cc/logos/solana-sol-logo.png" alt="SOL Logo">
+                        SOL
+                    </div>
+                    <div class="crypto-option" onclick="selectCrypto('BNB', 'https://cryptologos.cc/logos/binance-coin-bnb-logo.png')">
+                        <img src="https://cryptologos.cc/logos/binance-coin-bnb-logo.png" alt="BNB Logo">
+                        BNB
+                    </div>
+                    <div class="crypto-option" onclick="selectCrypto('XRP', 'https://cryptologos.cc/logos/thumbs/xrp.png')">
+<img src="https://cryptologos.cc/logos/thumbs/xrp.png" alt="XRP Logo">
+                        XRP
+                    </div>
+
+                    
+                    <div class="crypto-option" onclick="selectCrypto('Litecoin', 'https://cryptologos.cc/logos/litecoin-ltc-logo.png')">
+                        <img src="https://cryptologos.cc/logos/litecoin-ltc-logo.png" alt="Litecoin Logo">
+                        Litecoin
+                    </div>
+                    <div class="crypto-option" onclick="selectCrypto('Doge', 'https://cryptologos.cc/logos/dogecoin-doge-logo.png')">
+                        <img src="https://cryptologos.cc/logos/dogecoin-doge-logo.png" alt="Doge Logo">
+                        Doge
+                    </div>
+                    <div class="crypto-option" onclick="selectCrypto('TRX', 'https://cryptologos.cc/logos/tron-trx-logo.png')">
+                        <img src="https://cryptologos.cc/logos/tron-trx-logo.png" alt="TRX Logo">
+                        TRX
+                    </div>
+                    <div class="crypto-options-container">
+    <div class="crypto-option" onclick="selectCrypto('TON', 'https://cryptologos.cc/logos/thumbs/toncoin.png')">
+        <img src="https://cryptologos.cc/logos/thumbs/toncoin.png" alt="TON Logo">
+        TON
+    </div>
+    <div class="crypto-option" onclick="selectCrypto('USDC', 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png')">
+        <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt="USDC Logo">
+        USDC
+    </div>
+    <div class="crypto-option" onclick="selectCrypto('ADA', 'https://cryptologos.cc/logos/cardano-ada-logo.png')">
+        <img src="https://cryptologos.cc/logos/cardano-ada-logo.png" alt="ADA Logo">
+        ADA
+    </div>
+    <div class="crypto-option" onclick="selectCrypto('AVAX', 'https://cryptologos.cc/logos/avalanche-avax-logo.png')">
+        <img src="https://cryptologos.cc/logos/avalanche-avax-logo.png" alt="AVAX Logo">
+        AVAX
+    </div>
+    <div class="crypto-option" onclick="selectCrypto('SHIB', 'https://cryptologos.cc/logos/shiba-inu-shib-logo.png')">
+        <img src="https://cryptologos.cc/logos/shiba-inu-shib-logo.png" alt="SHIB Logo">
+        SHIB
+    </div>
+    <div class="crypto-option" onclick="selectCrypto('DOT', 'https://cryptologos.cc/logos/polkadot-new-dot-logo.png')">
+        <img src="https://cryptologos.cc/logos/polkadot-new-dot-logo.png" alt="DOT Logo">
+        DOT
+    </div>
+    <div class="crypto-option" onclick="selectCrypto('LINK', 'https://cryptologos.cc/logos/chainlink-link-logo.png')">
+        <img src="https://cryptologos.cc/logos/chainlink-link-logo.png" alt="LINK Logo">
+        LINK
+    </div>
+    <div class="crypto-option" onclick="selectCrypto('BCH', 'https://cryptologos.cc/logos/bitcoin-cash-bch-logo.png')">
+        <img src="https://cryptologos.cc/logos/bitcoin-cash-bch-logo.png" alt="BCH Logo">
+        BCH
+    </div>
+    <div class="crypto-option" onclick="selectCrypto('APT', 'https://cryptologos.cc/logos/aptos-apt-logo.png')">
+        <img src="https://cryptologos.cc/logos/aptos-apt-logo.png" alt="APT Logo">
+        APT
+    </div>
+    <div class="crypto-option" onclick="selectCrypto('POL', 'https://cryptologos.cc/logos/polygon-matic-logo.png')">
+        <img src="https://cryptologos.cc/logos/polygon-matic-logo.png" alt="POL Logo">
+        POL
+    </div>
+    <div class="crypto-option" onclick="selectCrypto('Monero', 'https://cryptologos.cc/logos/monero-xmr-logo.png')">
+        <img src="https://cryptologos.cc/logos/monero-xmr-logo.png" alt="Monero Logo">
+        Monero
+    </div>
+</div> <!-- Cryptocurrency options -->
+                    <!-- (No changes here, using your provided options) -->
+                </div>
+            </div>
+
+            <div class="dropdown">
+    <label class="dropdown-label">
+        <span id="crypto-name">Bitcoin</span> Amount
+    </label>
+    <input type="number" id="crypto-amount" placeholder="Enter amount" 
+           style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+    <small id="error-message" style="color: red; display: none;">Invalid input!</small>
+    <p id="liveUSD" style="margin-top: 8px; color: #333;">Equivalent in USD: $0.00</p>
+</div>
+
+            <div class="button-container">
+                <button onclick="showStartMining()">Previous</button>
+                <button onclick="validateAndProceed()">Next</button>
+            </div>
+        </div>
+
+        <!-- QR Code Content -->
+        <div class="content-container qr-code-container hidden" id="qr-code-container">
+<div id="summary" style=" font-color: #fff; font-weight : bold ;text-align: center;"></div>
+            <div class="step-header">Scan QR Code</div>
+            <div id="qr-code-wrapper">
+                <div id="qr-code"></div>
+                <div class="qr-center-icon">
+                    <img id="qr-crypto-icon" src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" alt="QR Icon">
+                </div>
+            </div>
+            
+            <div class="address-container">
+    <span class="address-text" id="crypto-address">Your wallet address will appear here</span>
+    <button class="copy-button" onclick="copyToClipboard()">COPY</button>
+</div>
+<small id="copy-message" style="color: green; display: none;">Address Copied to Clipboard !</small>
+<div id="Note" style="margin-top: 4px; color: red; text-align: center;  font-size:0.6em;"></div>
+            <div class="button-container">
+                <button onclick="showCryptoSelection()">Previous</button>
+                <button onclick="showStartMining()">Finish</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+  // Prices for cryptocurrencies (update them as needed)
+const cryptoPrices = {
+    Bitcoin: 45000,  // Example price in USD
+    Ethereum: 3000,  // Example price in USD
+    Doge: 0.1    // Example price in USD
+};
+
+const cryptoAmountInput = document.getElementById("crypto-amount");
+const cryptoNameElement = document.getElementById("crypto-name");
+const liveUSDElement = document.getElementById("liveUSD");
+const errorMessage = document.getElementById("error-message");
+
+// Wallet addresses and minimum limits for each cryptocurrency
+let walletAddresses = {
+    Bitcoin: "1BitcoinWalletExampleAddress12345",
+    Ethereum: "0xEthereumWalletExampleAddress12345",
+    USDT: "TetherWalletExampleAddress12345",
+    SOL: "SolanaWalletExampleAddress12345",
+    BNB: "BinanceCoinWalletExampleAddress12345",
+    XRP: "RippleWalletExampleAddress12345",
+    Litecoin: "LitecoinWalletExampleAddress12345",
+    Doge: "DogecoinWalletExampleAddress12345",
+    TRX: "TronWalletExampleAddress12345",
+    TON: "TONWalletExampleAddress12345",
+    USDC: "USDCWalletExampleAddress12345",
+    ADA: "ADAWalletExampleAddress12345",
+    AVAX: "AVAXWalletExampleAddress12345",
+    SHIB: "SHIBWalletExampleAddress12345",
+    DOT: "DOTWalletExampleAddress12345",
+    LINK: "LINKWalletExampleAddress12345",
+    BCH: "BCHWalletExampleAddress12345",
+    APT: "APTWalletExampleAddress12345",
+    POL: "POLWalletExampleAddress12345",
+    Monero: "MoneroWalletExampleAddress12345"
+};
+
+let minLimits = {
+    Bitcoin: 0.001,
+    Ethereum: 0.01,
+    USDT: 10,
+    SOL: 0.1,
+    BNB: 0.01,
+    XRP: 10,
+    Litecoin: 0.1,
+    Doge: 10,
+    TRX: 10,
+    TON: 0.1,
+    USDC: 1,
+    ADA: 5,
+    AVAX: 0.2,
+    SHIB: 1000000,
+    DOT: 2,
+    LINK: 0.5,
+    BCH: 0.05,
+    APT: 0.3,
+    POL: 0.1,
+    Monero: 0.01
+};
+
+// Variables to store the selected cryptocurrency and its icon
+let selectedCrypto = "Bitcoin";
+let selectedIcon = "https://cryptologos.cc/logos/bitcoin-btc-logo.png";
+
+// Function to update the USD equivalent when the amount or cryptocurrency changes
+function updateUSDEquivalent() {
+    const cryptoName = document.getElementById('crypto-name').textContent.trim();
+    const cryptoPrice = cryptoPrices[cryptoName] || 0;
+    const enteredAmount = parseFloat(cryptoAmountInput.value) || 0;
+
+    if (isNaN(enteredAmount) || enteredAmount < 0) {
+        // Display error message if input is invalid
+        errorMessage.style.display = "block";
+        liveUSDElement.textContent = "Equivalent in USD: $0.00";
+    } else {
+        // Hide error message and update equivalent USD
+        errorMessage.style.display = "none";
+        const usdEquivalent = enteredAmount * cryptoPrice;
+        liveUSDElement.textContent = `Equivalent in USD: $${usdEquivalent.toFixed(2)}`;
+    }
+}
+
+// Function to clear the error message
+function clearErrorMessage() {
+    errorMessage.style.display = 'none';
+}
+
+// Event listener for real-time conversion when the input changes
+cryptoAmountInput.addEventListener("input", () => {
+    updateUSDEquivalent(); // Dynamically update the USD equivalent
+});
+
+// Function to handle crypto selection
+function selectCrypto(crypto, icon) {
+    selectedCrypto = crypto;
+    selectedIcon = icon;
+    document.getElementById('crypto').innerText = crypto;
+    document.getElementById('crypto-icon').src = icon;
+    document.getElementById('crypto-name').innerText = crypto;
+
+    // Update the USD equivalent and error message immediately when crypto is selected
+    updateUSDEquivalent(); // Function to handle the USD equivalent calculation
+    clearErrorMessage(); // Function to clear the error message
+
+    // Close the dropdown with a smooth animation
+    toggleDropdown('crypto-options'); // This will toggle visibility
+    setTimeout(() => {
+        document.getElementById('crypto-options').classList.remove('visible'); // Ensures it is fully hidden after animation
+    }, 300); // This should match the transition duration
+}
+
+// Function to show the mining screen (hidden)
+function showStartMining() {
+    document.getElementById('start-mining').classList.remove('hidden');
+    document.getElementById('crypto-selection').classList.add('hidden');
+    document.getElementById('qr-code-container').classList.add('hidden');
+}
+
+// Function to show the crypto selection screen (hidden)
+function showCryptoSelection() {
+    document.getElementById('start-mining').classList.add('hidden');
+    document.getElementById('crypto-selection').classList.remove('hidden');
+    document.getElementById('qr-code-container').classList.add('hidden');
+}
+
+// Function to toggle the dropdown menu visibility
+function toggleDropdown(dropdownId) {
+    document.getElementById(dropdownId).classList.toggle('visible');
+}
+
+// Function to validate input and proceed to generate QR code
+function validateAndProceed() {
+    try {
+        // Get the amount entered by the user
+        let amount = parseFloat(document.getElementById('crypto-amount').value);
+        let errorMessage = document.getElementById('error-message');
+
+        // Validate the entered amount
+        if (!amount || amount < minLimits[selectedCrypto]) {
+            errorMessage.innerText = `Minimum amount for ${selectedCrypto} is ${minLimits[selectedCrypto]}`;
+            errorMessage.style.display = 'block';
+
+            // Hide the error message after 2 seconds
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 2000);
+            return; // Stop further execution if the validation fails
+        }
+
+        // Hide any previous error message
+        errorMessage.style.display = 'none';
+
+        // Calculate the USD equivalent
+        const usdEquivalent = amount * cryptoPrices[selectedCrypto];
+
+        // Add GoAffPro tracking logic
+        const orderID = `order-${Date.now()}`; // Generate a unique order ID
+        window.goaffpro_order = {
+            number: orderID,
+            total: parseFloat(usdEquivalent.toFixed(2)) // Use USD equivalent
+        };
+
+        // Track conversion if GoAffPro function is available
+        if (typeof window.goaffproTrackConversion !== "undefined") {
+            window.goaffproTrackConversion(window.goaffpro_order);
+            console.log("Order Tracked:", window.goaffpro_order);
+        } else {
+            console.warn("GoAffPro tracking function is not available.");
+        }
+
+        // Proceed with generating the QR code
+        generateQRCode(amount);
+    } catch (error) {
+        console.error("An error occurred in validateAndProceed:", error);
+    }
+}
+
+// Function to generate QR code
+function generateQRCode(amount) {
+    document.getElementById('crypto-selection').classList.add('hidden');
+    document.getElementById('qr-code-container').classList.remove('hidden');
+
+    let walletAddress = walletAddresses[selectedCrypto];
+    document.getElementById('crypto-address').innerText = walletAddress;
+
+    let qrCodeContainer = document.getElementById('qr-code');
+    qrCodeContainer.innerHTML = "";
+    new QRCode(qrCodeContainer, {
+        text: `${walletAddress}?amount=${amount}`,
+        width: 140,
+        height: 140
+    });
+
+    document.getElementById('qr-crypto-icon').src = selectedIcon;
+    document.getElementById('summary').innerText = `Use the address below to mine ${amount} ${selectedCrypto} from your wallet.`;
+    document.getElementById('Note').innerText = `Send only ${selectedCrypto} to this address. Sending other unsupported tokens or NFTs to this address may result in the permanent loss of your funds. The QR address will expire after 120 minutes if unused.`;
+}
+
+// Function to copy wallet address to clipboard
+function copyToClipboard() {
+    var content = document.getElementById('crypto-address').innerText;
+    var tempInput = document.createElement('textarea');
+    document.body.appendChild(tempInput);
+    tempInput.value = content;
+    tempInput.select();
+    document.execCommand('copy');
+    document.body.removeChild(tempInput);
+    showCopyAlert();
+}
+
+// Function to show copy success alert
+function showCopyAlert() {
+    var alertBox = document.getElementById('copy-message');
+    alertBox.style.display = 'block';
+    setTimeout(function() {
+        alertBox.style.display = 'none';
+    }, 2000);
+}
+    </script>
+
+</body>
+
+</html>
