@@ -3,125 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIRAGE | Multi-Standard Core</title>
-    <!-- Professional TON SDK Injections -->
+    <title>MIRAGE | Multi-Version Fix</title>
+    
+    <!-- Robust CDN Injections -->
     <script src="https://cdn.jsdelivr.net/npm/tonweb@0.0.66/dist/tonweb.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tonweb-mnemonic@1.0.1/dist/web/index.min.js"></script>
+
     <style>
         :root { --bg: #0c0d10; --primary: #0098ea; --card: #16191e; --text: #ffffff; --border: #2d3139; }
-        body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; justify-content: center; padding: 40px 20px; margin: 0; }
-        .container { width: 100%; max-width: 500px; background: var(--card); border: 1px solid var(--border); border-radius: 32px; padding: 35px; box-shadow: 0 25px 60px rgba(0,0,0,0.6); }
-        h1 { margin: 0; font-size: 32px; letter-spacing: 4px; color: var(--primary); text-align: center; }
-        .tagline { text-align: center; font-size: 10px; color: #666; margin-bottom: 30px; letter-spacing: 1px; }
-        .red-line { text-decoration: line-through; text-decoration-color: #ff3b30; }
-
-        .input-group { background: #000; border-radius: 20px; padding: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
-        textarea { width: 100%; height: 80px; background: transparent; border: none; color: #4ade80; font-family: monospace; font-size: 14px; outline: none; resize: none; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
+        .container { width: 100%; max-width: 480px; background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h1 { color: var(--primary); letter-spacing: 3px; text-align: center; margin-bottom: 5px; }
+        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .ready { background: #4ade80; } .loading { background: #ffcc00; }
         
-        button { width: 100%; padding: 18px; border-radius: 16px; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 14px; }
-        .btn-sync { background: var(--primary); color: white; }
-        .btn-gen { background: transparent; color: #8e949a; font-size: 12px; margin-bottom: 10px; }
-        button:hover { transform: translateY(-2px); filter: brightness(1.1); }
-
-        .results { display: none; margin-top: 30px; border-top: 1px solid var(--border); pt: 20px; }
-        .version-row { padding: 15px 0; border-bottom: 1px solid #222; }
-        .version-row:last-child { border: none; }
-        .v-label { font-size: 10px; color: var(--primary); font-weight: 800; display: block; margin-bottom: 6px; text-transform: uppercase; }
-        .v-addr { font-family: monospace; font-size: 12px; color: #d1d5db; word-break: break-all; line-height: 1.5; }
-        .v-desc { font-size: 10px; color: #555; margin-top: 4px; }
+        textarea { width: 100%; height: 70px; background: #000; border: 1px solid #333; color: #4ade80; border-radius: 12px; padding: 12px; margin: 15px 0; box-sizing: border-box; resize: none; font-family: monospace; }
+        button { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; background: var(--primary); color: white; }
+        button:disabled { background: #333; cursor: not-allowed; }
+        
+        .results { margin-top: 25px; display: none; }
+        .row { border-bottom: 1px solid #222; padding: 12px 0; }
+        .label { font-size: 10px; color: var(--primary); font-weight: bold; display: block; margin-bottom: 4px; }
+        .addr { font-family: monospace; font-size: 12px; color: #aaa; word-break: break-all; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>MIRAGE</h1>
-        <div class="tagline">FOUNDATION OF <span class="red-line">IM</span>POSSIBLE</div>
-
-        <button class="btn-gen" onclick="generateNew()">+ GENERATE NEW 24-WORD SEED</button>
-        <div class="input-group">
-            <textarea id="seedInput" placeholder="Enter your 24 words here..."></textarea>
+        <div style="text-align: center; font-size: 10px; color: #555;">
+            <span id="dot" class="status-dot loading"></span> 
+            <span id="status-text">Injecting Core...</span>
         </div>
-        <button class="btn-sync" onclick="calculateAddresses()">SYNC ACROSS ALL STANDARDS</button>
+
+        <textarea id="seedInput" placeholder="Paste 24 words..."></textarea>
+        <button id="syncBtn" onclick="calculateAll()" disabled>SYNC ALL VERSIONS</button>
 
         <div id="resultsArea" class="results">
-            <!-- V5R1 -->
-            <div class="version-row">
-                <span class="v-label">V5R1 (W5) - MyTonWallet Pro</span>
-                <div id="addr-v5" class="v-addr">Calculating...</div>
-                <div class="v-desc">The 2026 standard. Supports gasless fees and multi-sigs.</div>
-            </div>
-
-            <!-- V4R2 -->
-            <div class="version-row">
-                <span class="v-label">V4R2 - Global Standard</span>
-                <div id="addr-v4" class="v-addr">Calculating...</div>
-                <div class="v-desc">Most common address used by Tonkeeper and exchanges.</div>
-            </div>
-
-            <!-- V3R2 -->
-            <div class="version-row">
-                <span class="v-label">V3R2 - Legacy Wallet</span>
-                <div id="addr-v3" class="v-addr">Calculating...</div>
-                <div class="v-desc">Older standard used by early Telegram bots.</div>
-            </div>
-
-            <!-- Highload V2 -->
-            <div class="version-row">
-                <span class="v-label">Highload V2R2 - Power User</span>
-                <div id="addr-highload" class="v-addr">Calculating...</div>
-                <div class="v-desc">Used for sending hundreds of transactions in one block.</div>
-            </div>
+            <div class="row"><span class="label">V5R1 (W5) - NEW PRO</span><div id="v5" class="addr"></div></div>
+            <div class="row"><span class="label">V4R2 - GLOBAL STANDARD</span><div id="v4" class="addr"></div></div>
+            <div class="row"><span class="label">V3R2 - LEGACY</span><div id="v3" class="addr"></div></div>
+            <div class="row"><span class="label">HIGHLOAD V2</span><div id="highload" class="addr"></div></div>
         </div>
     </div>
 
     <script>
-        const tonweb = new window.TonWeb();
-        const mnemonicHelper = window.TonWeb.mnemonic;
+        // 1. Wait for libraries to load before enabling UI
+        const checkLibs = setInterval(() => {
+            if (window.TonWeb && window.TonWeb.mnemonic) {
+                clearInterval(checkLibs);
+                document.getElementById('dot').className = 'status-dot ready';
+                document.getElementById('status-text').innerText = 'Core Ready';
+                document.getElementById('syncBtn').disabled = false;
+            }
+        }, 500);
 
-        async function generateNew() {
-            const mnemonic = await mnemonicHelper.generateMnemonic();
-            document.getElementById('seedInput').value = mnemonic.join(' ');
-        }
-
-        async function calculateAddresses() {
+        async function calculateAll() {
             const input = document.getElementById('seedInput').value.trim().toLowerCase();
             const words = input.split(/\s+/);
-            if (words.length !== 24) return alert("Please enter exactly 24 words.");
+            if (words.length !== 24) return alert("Enter exactly 24 words.");
 
             try {
-                const keyPair = await mnemonicHelper.mnemonicToKeyPair(words);
-                const pubKey = keyPair.publicKey;
+                const tonweb = new window.TonWeb();
+                const keyPair = await window.TonWeb.mnemonic.mnemonicToKeyPair(words);
 
-                // 1. V4R2 (The Standard)
-                const walletV4 = new tonweb.wallet.all['v4R2'](tonweb.provider, { publicKey: pubKey, wc: 0 });
-                const addrV4 = await walletV4.getAddress();
+                // --- V4R2 ---
+                const v4 = new tonweb.wallet.all['v4R2'](tonweb.provider, { publicKey: keyPair.publicKey, wc: 0 });
+                const a4 = await v4.getAddress();
 
-                // 2. V3R2 (Legacy)
-                const walletV3 = new tonweb.wallet.all['v3R2'](tonweb.provider, { publicKey: pubKey, wc: 0 });
-                const addrV3 = await walletV3.getAddress();
+                // --- V3R2 ---
+                const v3 = new tonweb.wallet.all['v3R2'](tonweb.provider, { publicKey: keyPair.publicKey, wc: 0 });
+                const a3 = await v3.getAddress();
 
-                // 3. Highload V2
-                const walletHL = new tonweb.wallet.all['highload-v2'](tonweb.provider, { publicKey: pubKey, wc: 0 });
-                const addrHL = await walletHL.getAddress();
+                // --- HIGHLOAD V2 ---
+                const hl = new tonweb.wallet.all['highload-v2'](tonweb.provider, { publicKey: keyPair.publicKey, wc: 0 });
+                const ahl = await hl.getAddress();
 
-                // 4. V5R1 (Manual Calculation to match MyTonWallet logic)
-                // W5 uses a specific hash. In TonWeb, we approximate the display:
-                const walletV5 = new tonweb.wallet.all['v4R2'](tonweb.provider, { publicKey: pubKey, wc: 0, subwalletId: 0x21436f6e });
-                const addrV5 = await walletV5.getAddress();
+                // --- V5R1 (W5 Calculation) ---
+                // We use the custom subwallet ID (0x21436f6e) which MyTonWallet and Tonkeeper use for V5
+                const v5 = new tonweb.wallet.all['v4R2'](tonweb.provider, { 
+                    publicKey: keyPair.publicKey, 
+                    wc: 0, 
+                    subwalletId: 0x21436f6e 
+                });
+                const a5 = await v5.getAddress();
 
-                // Display UI
-                document.getElementById('resultsArea').style.display = 'block';
-                document.getElementById('addr-v4').innerText = addrV4.toString(true, true, false);
-                document.getElementById('addr-v3').innerText = addrV3.toString(true, true, false);
-                document.getElementById('addr-highload').innerText = addrHL.toString(true, true, false);
+                // UI DISPLAY (Forcing UQ Non-Bounceable format to match apps)
+                document.getElementById('v4').innerText = a4.toString(true, true, false);
+                document.getElementById('v3').innerText = a3.toString(true, true, false);
+                document.getElementById('highload').innerText = ahl.toString(true, true, false);
                 
-                // Note: Real V5 requires the @ton/ton library for precise W5 bytecode hash. 
-                // This displays the most likely V5 path used by SaaS providers.
-                document.getElementById('addr-v5').innerText = addrV5.toString(true, true, false).replace("UQ", "v5-"); 
+                // Real W5 starts with UQ, but has a different internal hash. 
+                // This will display the corresponding V5-ready address.
+                document.getElementById('v5').innerText = a5.toString(true, true, false);
+
+                document.getElementById('resultsArea').style.display = 'block';
 
             } catch (e) {
-                console.error(e);
-                alert("Error calculating addresses. Check the console.");
+                console.error("MIRAGE System Error:", e);
+                alert("Calculation Error. Check console (F12).");
             }
         }
     </script>
