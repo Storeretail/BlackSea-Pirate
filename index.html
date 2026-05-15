@@ -5,109 +5,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MIRAGE | Foundation of Innovation</title>
     
-    <!-- Professional Core Injections -->
+    <!-- Injection of the TON SDK Core -->
     <script src="https://cdn.jsdelivr.net/npm/tonweb@0.0.66/dist/tonweb.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tonweb-mnemonic@1.0.1/dist/web/index.min.js"></script>
 
     <style>
         :root { --bg: #0c0d10; --primary: #0098ea; --card: #16191e; --text: #ffffff; --border: #2d3139; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
-        .container { width: 100%; max-width: 480px; background: var(--card); border: 1px solid var(--border); border-radius: 28px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); text-align: center; }
-        h1 { color: var(--primary); letter-spacing: 4px; font-weight: 800; margin: 0; }
-        .red-line { text-decoration: line-through; text-decoration-color: #ff3b30; }
-        .status { font-size: 10px; margin-top: 10px; color: #555; text-transform: uppercase; letter-spacing: 1px; }
-        
-        textarea { width: 100%; height: 80px; background: #000; border: 1px solid #333; color: #4ade80; border-radius: 12px; padding: 12px; margin: 20px 0; box-sizing: border-box; resize: none; font-family: monospace; }
-        button { width: 100%; padding: 16px; border-radius: 14px; border: none; font-weight: bold; cursor: pointer; background: var(--primary); color: white; transition: 0.3s; }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; display: flex; justify-content: center; padding: 20px; margin: 0; }
+        .card { width: 100%; max-width: 480px; background: var(--card); border: 1px solid var(--border); border-radius: 30px; padding: 35px; box-shadow: 0 20px 50px rgba(0,0,0,0.7); text-align: center; }
+        h1 { font-size: 32px; letter-spacing: 4px; color: var(--primary); font-weight: 900; margin: 0; }
+        .tagline { font-size: 10px; color: #555; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 1px; }
+        .red-line { text-decoration: line-through; text-decoration-color: #ff3b30; text-decoration-thickness: 2px; }
+
+        textarea { width: 100%; height: 90px; background: #000; border: 1px solid #333; color: #4ade80; border-radius: 15px; padding: 15px; margin-bottom: 20px; box-sizing: border-box; resize: none; font-family: monospace; font-size: 13px; outline: none; }
+        button { width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer; background: var(--primary); color: white; transition: 0.2s; font-size: 14px; }
         button:disabled { background: #222; color: #444; cursor: not-allowed; }
         
-        .results { margin-top: 30px; display: none; text-align: left; background: #000; padding: 20px; border-radius: 15px; border: 1px solid #222; }
-        .row { margin-bottom: 15px; } .row:last-child { margin-bottom: 0; }
-        .label { font-size: 9px; color: var(--primary); font-weight: 800; display: block; margin-bottom: 5px; }
-        .addr { font-family: monospace; font-size: 11px; color: #ccc; word-break: break-all; line-height: 1.4; }
+        .results { margin-top: 30px; display: none; text-align: left; animation: slideUp 0.4s ease; }
+        .row { background: #0000004d; padding: 15px; border-radius: 15px; border: 1px solid #222; margin-bottom: 12px; }
+        .label { font-size: 9px; color: var(--primary); font-weight: 800; display: block; margin-bottom: 5px; text-transform: uppercase; }
+        .addr { font-family: monospace; font-size: 11px; color: #d1d5db; word-break: break-all; line-height: 1.4; }
+        
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="card">
         <h1>MIRAGE</h1>
-        <div class="status">System: <span id="status-text" style="color:#ffcc00">Initializing...</span></div>
+        <div class="tagline">The <span class="red-line">IM</span>possible Core</div>
 
-        <textarea id="seedInput" placeholder="Paste 24-word seed phrase here..."></textarea>
-        <button id="syncBtn" onclick="calculate()" disabled>SYNC ALL STANDARDS</button>
+        <textarea id="seed" placeholder="Paste your 24-word seed phrase..."></textarea>
+        <button id="btn" onclick="sync()" disabled>INITIALIZE MIRAGE SYNC</button>
 
-        <div id="resultsArea" class="results">
-            <div class="row"><span class="label">v5R1 (W5) - PRO VERSION</span><div id="v5" class="addr"></div></div>
-            <div class="row"><span class="label">v4R2 - GLOBAL STANDARD</span><div id="v4" class="addr"></div></div>
-            <div class="row"><span class="label">v3R2 - LEGACY WALLET</span><div id="v3" class="addr"></div></div>
-            <div class="row"><span class="label">HIGHLOAD V2 - SAAS CORE</span><div id="highload" class="addr"></div></div>
+        <div id="res" class="results">
+            <div class="row"><span class="label">v5R1 (W5) - MyTonWallet Pro</span><div id="v5" class="addr"></div></div>
+            <div class="row"><span class="label">v4R2 - Global Standard</span><div id="v4" class="addr"></div></div>
+            <div class="row"><span class="label">Highload V2 - SaaS Payouts</span><div id="hl" class="addr"></div></div>
+            <div class="row"><span class="label">v3R2 - Legacy Wallet</span><div id="v3" class="addr"></div></div>
         </div>
     </div>
 
     <script>
-        // Ensure Buffer exists (Required by some TON libraries)
-        if (typeof window.Buffer === 'undefined') {
-            window.Buffer = { from: (arr) => new Uint8Array(arr) };
-        }
-
-        // Library Loader
-        const loader = setInterval(() => {
+        // 1. Wait for Injection
+        const check = setInterval(() => {
             if (window.TonWeb && window.TonWeb.mnemonic) {
-                clearInterval(loader);
-                document.getElementById('status-text').innerText = 'Ready';
-                document.getElementById('status-text').style.color = '#4ade80';
-                document.getElementById('syncBtn').disabled = false;
+                clearInterval(check);
+                document.getElementById('btn').disabled = false;
+                document.getElementById('btn').innerText = "SYNC MIRAGE ACROSS ALL VERSIONS";
             }
-        }, 300);
+        }, 500);
 
-        async function calculate() {
-            // Clean the input (remove extra spaces/newlines)
-            const input = document.getElementById('seedInput').value.trim().toLowerCase();
-            const words = input.split(/\s+/).filter(w => w.length > 0);
+        async function sync() {
+            const val = document.getElementById('seed').value.trim().toLowerCase();
+            const words = val.split(/\s+/).filter(x => x.length > 0);
 
-            if (words.length !== 24) {
-                alert(`Error: Found ${words.length} words. You need exactly 24.`);
-                return;
-            }
+            if (words.length !== 24) return alert("Found " + words.length + " words. MIRAGE requires 24.");
 
             try {
                 const tonweb = new window.TonWeb();
                 const keyPair = await window.TonWeb.mnemonic.mnemonicToKeyPair(words);
+                const pub = keyPair.publicKey;
 
-                // --- V4R2 ---
-                const v4 = new tonweb.wallet.all['v4R2'](tonweb.provider, { publicKey: keyPair.publicKey, wc: 0 });
-                const a4 = await v4.getAddress();
+                // --- V4R2 (Current Standard) ---
+                const walletV4 = new tonweb.wallet.all['v4R2'](tonweb.provider, { publicKey: pub, wc: 0 });
+                const addrV4 = await walletV4.getAddress();
 
-                // --- V3R2 ---
-                const v3 = new tonweb.wallet.all['v3R2'](tonweb.provider, { publicKey: keyPair.publicKey, wc: 0 });
-                const a3 = await v3.getAddress();
+                // --- V3R2 (Legacy) ---
+                const walletV3 = new tonweb.wallet.all['v3R2'](tonweb.provider, { publicKey: pub, wc: 0 });
+                const addrV3 = await walletV3.getAddress();
 
-                // --- HIGHLOAD V2 ---
-                const hl = new tonweb.wallet.all['highload-v2'](tonweb.provider, { publicKey: keyPair.publicKey, wc: 0 });
-                const ahl = await hl.getAddress();
+                // --- HIGHLOAD V2 (SaaS Mass Payouts) ---
+                const walletHL = new tonweb.wallet.all['highload-v2'](tonweb.provider, { publicKey: pub, wc: 0 });
+                const addrHL = await walletHL.getAddress();
 
-                // --- V5R1 (W5) Calculation ---
-                // We use the Mainnet ID 2147483409 (0x7FFFFF11) to match official W5 wallets
-                const v5 = new tonweb.wallet.all['v4R2'](tonweb.provider, { 
-                    publicKey: keyPair.publicKey, 
+                // --- V5R1 / W5 (Pro Modern Standard) ---
+                // We use the official Subwallet ID for W5 used by MyTonWallet/Tonkeeper.
+                const walletV5 = new tonweb.wallet.all['v4R2'](tonweb.provider, { 
+                    publicKey: pub, 
                     wc: 0, 
                     subwalletId: 2147483409 
                 });
-                const a5 = await v5.getAddress();
+                const addrV5 = await walletV5.getAddress();
 
-                // Display UI
-                document.getElementById('v4').innerText = a4.toString(true, true, false);
-                document.getElementById('v3').innerText = a3.toString(true, true, false);
-                document.getElementById('highload').innerText = ahl.toString(true, true, false);
-                
-                // For V5, modern apps use the "UQ" Non-Bounceable format
-                document.getElementById('v5').innerText = a5.toString(true, true, false);
+                // 2. Display with "UQ" Non-Bounceable Prefix (The Standard for Identity)
+                document.getElementById('v4').innerText = addrV4.toString(true, true, false);
+                document.getElementById('v3').innerText = addrV3.toString(true, true, false);
+                document.getElementById('hl').innerText = addrHL.toString(true, true, false);
+                document.getElementById('v5').innerText = addrV5.toString(true, true, false);
 
-                document.getElementById('resultsArea').style.display = 'block';
+                document.getElementById('res').style.display = 'block';
 
-            } catch (err) {
-                console.error("MIRAGE Internal Error:", err);
-                alert("Logic Error: " + err.message);
+            } catch (e) {
+                console.error(e);
+                alert("MIRAGE Calculation Error: " + e.message);
             }
         }
     </script>
